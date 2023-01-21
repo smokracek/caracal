@@ -2,28 +2,29 @@
 // Created by Sam Mokracek on 1/19/23.
 //
 
-#ifndef CARACAL_SESSION_H
-#define CARACAL_SESSION_H
+#ifndef CARACAL_FLOPPA_SESSION_HPP
+#define CARACAL_FLOPPA_SESSION_HPP
 
 #include <libtorrent/session.hpp>
 
-namespace caracal {
+namespace floppa {
 
     class Session {
     public:
         static Session& instance();
-        void startSession();
-        void addMagnet(const std::string& magnetUri);
+        void addMagnet(const std::string& magnet_uri);
         void pauseSession();
         void resumeSession();
         void stopSession();
+        void set_storage_dir(const std::string& path);
     private:
         Session();
         ~Session();
 
         lt::session session_;
+        std::string storage_dir_;
     };
 
-} // caracal
+} // floppa
 
-#endif //CARACAL_SESSION_H
+#endif //CARACAL_FLOPPA_SESSION_HPP

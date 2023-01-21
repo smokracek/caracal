@@ -53,8 +53,8 @@ build CMakeFiles/Caracal.dir/src/caracal.cpp.o: CXX_COMPILER__Caracal_Debug /Use
   OBJECT_DIR = CMakeFiles/Caracal.dir
   OBJECT_FILE_DIR = CMakeFiles/Caracal.dir/src
 
-build CMakeFiles/Caracal.dir/src/Session.cpp.o: CXX_COMPILER__Caracal_Debug /Users/sammokracek/CLionProjects/Caracal/src/Session.cpp || cmake_object_order_depends_target_Caracal
-  DEP_FILE = CMakeFiles/Caracal.dir/src/Session.cpp.o.d
+build CMakeFiles/Caracal.dir/src/floppa_session.cpp.o: CXX_COMPILER__Caracal_Debug /Users/sammokracek/CLionProjects/Caracal/src/floppa_session.cpp || cmake_object_order_depends_target_Caracal
+  DEP_FILE = CMakeFiles/Caracal.dir/src/floppa_session.cpp.o.d
   FLAGS = -g -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk -fcolor-diagnostics -std=gnu++17
   INCLUDES = -I/usr/local/include
   OBJECT_DIR = CMakeFiles/Caracal.dir
@@ -68,7 +68,7 @@ build CMakeFiles/Caracal.dir/src/Session.cpp.o: CXX_COMPILER__Caracal_Debug /Use
 #############################################
 # Link the static library libCaracal.a
 
-build libCaracal.a: CXX_STATIC_LIBRARY_LINKER__Caracal_Debug CMakeFiles/Caracal.dir/src/caracal.cpp.o CMakeFiles/Caracal.dir/src/Session.cpp.o
+build libCaracal.a: CXX_STATIC_LIBRARY_LINKER__Caracal_Debug CMakeFiles/Caracal.dir/src/caracal.cpp.o CMakeFiles/Caracal.dir/src/floppa_session.cpp.o
   ARCH_FLAGS = -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk
   LANGUAGE_COMPILE_FLAGS = -g
   OBJECT_DIR = CMakeFiles/Caracal.dir
