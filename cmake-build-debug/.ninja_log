@@ -1,9 +1,0 @@
-# ninja log v5
-62	9038	1674260879620641738	CMakeFiles/Caracal.dir/src/Session.cpp.o	59561ce7f52f2b51
-17	409	1674263016241503157	build.ninja	655d5159d3d6e56e
-59	934	1674260871535859035	CMakeFiles/Caracal.dir/src/caracal.cpp.o	abae12aed7d3d6c1
-9039	9424	1674260880043908000	libCaracal.a	78738122b49f454
-1	326	1674263016241503157	build.ninja	655d5159d3d6e56e
-1	9907	1674263026150110403	CMakeFiles/Caracal.dir/src/floppa_session.cpp.o	a3c994fa260b5432
-74	6932	1674263040693862752	CMakeFiles/Caracal.dir/src/caracal.cpp.o	abae12aed7d3d6c1
-6934	7085	1674263040899116000	libCaracal.a	55b5edf2cee1face
