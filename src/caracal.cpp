@@ -2,29 +2,29 @@
 // Created by Sam Mokracek on 1/19/23.
 //
 
-#include "floppa_session.hpp"
+#include "client_session.hpp"
 #include "caracal.hpp"
 
 namespace caracal {
 
     void pause() {
-        floppa::Session::instance().pauseSession();
+        floppa::ClientSession::instance().pauseSession();
     }
 
     void resume() {
-        floppa::Session::instance().resumeSession();
+        floppa::ClientSession::instance().resumeSession();
     }
 
     void stop() {
-        floppa::Session::instance().stopSession();
+        floppa::ClientSession::instance().stopSession();
     }
 
     void set_storage_dir(const std::string& path) {
-        floppa::Session::instance().set_storage_dir(path);
+        floppa::ClientSession::instance().set_storage_dir(path);
     }
 
     void addMagnet(const std::string& magnet_uri) {
-        floppa::Session::instance().addMagnet(magnet_uri);
+        floppa::ClientSession::instance().addMagnet(magnet_uri);
     }
 
 }
