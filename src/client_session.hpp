@@ -1,7 +1,3 @@
-//
-// Created by Sam Mokracek on 1/19/23.
-//
-
 #ifndef CARACAL_CLIENT_SESSION_HPP
 #define CARACAL_CLIENT_SESSION_HPP
 

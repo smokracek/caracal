@@ -1,7 +1,3 @@
-//
-// Created by Sam Mokracek on 1/19/23.
-//
-
 #include "client_session.hpp"
 #include "caracal.hpp"
 
