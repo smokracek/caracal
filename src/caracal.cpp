@@ -1,5 +1,6 @@
-#include "client_session.hpp"
-#include "caracal.hpp"
+#include <iostream>
+#include "../include/client_session.hpp"
+#include "../include/caracal.hpp"
 
 namespace caracal {
 
@@ -15,8 +16,9 @@ namespace caracal {
         floppa::ClientSession::instance().stopSession();
     }
 
-    void set_storage_dir(const std::string& path) {
+    int set_storage_dir(const std::string& path) {
         floppa::ClientSession::instance().set_storage_dir(path);
+        return 1;
     }
 
     void addMagnet(const std::string& magnet_uri) {

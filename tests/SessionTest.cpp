@@ -1,7 +1,7 @@
 #include <iostream>
+#include "../include/caracal.hpp"
 
 int main() {
-    std::cout << "Hello World!" << std::endl;
-
-    std::cout << "bruh\n";
+    assert(caracal::set_storage_dir(".") == 1);
+    return 0;
 }

@@ -5,14 +5,17 @@ test_dir = 'test'
 
 libtorrent_dep = dependency('libtorrent-rasterbar')
 
+# libcaracal = declare_dependency(link_args : ['-L/usr/local/lib', '-llibcaracal'])
+
 src = [
     'src/caracal.cpp',
     'src/client_session.cpp']
 
 caracal_lib = library('caracal', 
                         src, 
-                        include_directories : ['src'],
-                        dependencies : [libtorrent_dep])
+                        include_directories : ['src', 'include'],
+                        dependencies : [libtorrent_dep],
+                        install : true)
 
 test_src = ['tests/SessionTest.cpp']
 

@@ -1,12 +1,12 @@
-#include "client_session.hpp"
+#include "../include/client_session.hpp"
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/torrent_handle.hpp>
 
 namespace floppa {
 
     ClientSession &ClientSession::instance() {
-        static ClientSession session;
-        return session;
+        static ClientSession* session = new ClientSession();
+        return *session;
     }
 
     ClientSession::ClientSession() = default;
@@ -14,6 +14,10 @@ namespace floppa {
     ClientSession::~ClientSession() {
         session_.~session();
     }
+
+    // lt::session& get() {
+    //     return session_;
+    // }
 
     void ClientSession::addMagnet(const std::string& magnet_uri) {
         lt::add_torrent_params params = lt::parse_magnet_uri(magnet_uri);
