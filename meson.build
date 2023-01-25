@@ -5,8 +5,6 @@ test_dir = 'test'
 
 libtorrent_dep = dependency('libtorrent-rasterbar')
 
-# libcaracal = declare_dependency(link_args : ['-L/usr/local/lib', '-llibcaracal'])
-
 src = [
     'src/caracal.cpp',
     'src/client_session.cpp']
