@@ -1,13 +1,13 @@
-#ifndef CARACAL_CLIENT_SESSION_HPP
-#define CARACAL_CLIENT_SESSION_HPP
+#ifndef CARACAL_LIBTORRENT_SESSION_HPP
+#define CARACAL_LIBTORRENT_SESSION_HPP
 
 #include <libtorrent/session.hpp>
 
 namespace floppa {
 
-    class ClientSession {
+    class LibTorrentSession {
     public:
-        static ClientSession& instance();
+        static LibTorrentSession& instance();
         void addMagnet(const std::string& magnet_uri);
         void pauseSession();
         void resumeSession();
@@ -15,8 +15,8 @@ namespace floppa {
         void set_storage_dir(const std::string& path);
         std::vector<std::string> get_alerts();
     private:
-        ClientSession();
-        ~ClientSession();
+        LibTorrentSession();
+        ~LibTorrentSession();
 
         lt::session session_;
         std::string storage_dir_;

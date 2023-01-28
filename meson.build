@@ -4,7 +4,7 @@ libtorrent_dep = dependency('libtorrent-rasterbar')
 
 src = [
     'src/caracal.cpp',
-    'src/client_session.cpp']
+    'src/libtorrent_session.cpp']
 
 caracal_lib = library('caracal', 
                         src, 
