@@ -1,10 +1,12 @@
 #include "../include/libtorrent_session.hpp"
 #include <libtorrent/magnet_uri.hpp>
-#include <libtorrent/torrent_handle.hpp>
-#include <libtorrent/alert_types.hpp>
+#include <libtorrent/session_params.hpp>
 #include <libtorrent/settings_pack.hpp>
+#include <libtorrent/add_torrent_params.hpp>
+#include <libtorrent/alert.hpp>
+#include <iostream>
 
-namespace floppa {
+namespace caracal {
 
     LibTorrentSession& LibTorrentSession::instance() {
         static LibTorrentSession* session = new LibTorrentSession();
@@ -12,14 +14,14 @@ namespace floppa {
     }
 
     LibTorrentSession::LibTorrentSession() {
-        lt::settings_pack settings;
-        settings.set_int(
+        set_storage_dir(".");
+        lt::session_params params;
+        params.settings.set_int(
             lt::settings_pack::alert_mask, 
             lt::alert_category::status 
             | lt::alert_category::error
             | lt::alert_category::storage);
-        settings.set_str(lt::settings_pack::listen_interfaces, "0.0.0.0:6881,[::1]:6881");
-        lt::session session_(settings);
+        lt::session session_(params);
     };
 
     LibTorrentSession::~LibTorrentSession() {
@@ -29,34 +31,16 @@ namespace floppa {
     void LibTorrentSession::addMagnet(const std::string& magnet_uri) {
         lt::add_torrent_params params = lt::parse_magnet_uri(magnet_uri);
         params.save_path = storage_dir_;
-        session_.add_torrent(std::move(params));
-    }
-
-    void LibTorrentSession::pauseSession() {
-        session_.pause();
-    }
-
-    void LibTorrentSession::resumeSession() {
-        if (session_.is_paused()) {
-            session_.resume();
-            std::vector<lt::torrent_handle> const torrents = session_.get_torrents();
-            for (auto torrent: torrents) {
-                torrent.resume();
-            }
-        }
+        session_.async_add_torrent(std::move(params));
     }
 
     void LibTorrentSession::set_storage_dir(const std::string& path) {
         LibTorrentSession::storage_dir_ = path;
     }
 
-    std::vector<std::string> LibTorrentSession::get_alerts() {
-        std::vector<lt::alert*> alerts;
-        session_.pop_alerts(&alerts);
-        std::vector<std::string> ret;
-        for (auto alert : alerts) {
-            ret.push_back("Alert: " + std::string(alert->what()) + " " + alert->message());
-        }
-        return ret;
+    std::vector<lt::alert*> LibTorrentSession::get_session_alerts() {
+        std::vector<lt::alert*> lt_alerts;
+        session_.pop_alerts(&lt_alerts);
+        return lt_alerts;
     }
-} // floppa
+} // caracal

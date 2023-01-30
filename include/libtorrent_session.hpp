@@ -2,18 +2,20 @@
 #define CARACAL_LIBTORRENT_SESSION_HPP
 
 #include <libtorrent/session.hpp>
+#include <libtorrent/torrent_status.hpp>
+#include <libtorrent/alert.hpp>
+#include <string>
+#include <vector>
+#include "alert.h"
 
-namespace floppa {
+namespace caracal {
 
     class LibTorrentSession {
     public:
         static LibTorrentSession& instance();
         void addMagnet(const std::string& magnet_uri);
-        void pauseSession();
-        void resumeSession();
-        void stopSession();
         void set_storage_dir(const std::string& path);
-        std::vector<std::string> get_alerts();
+        std::vector<lt::alert*> get_session_alerts();
     private:
         LibTorrentSession();
         ~LibTorrentSession();
