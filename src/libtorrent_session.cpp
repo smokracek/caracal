@@ -4,7 +4,8 @@
 #include <libtorrent/settings_pack.hpp>
 #include <libtorrent/add_torrent_params.hpp>
 #include <libtorrent/alert.hpp>
-#include <iostream>
+#include <libtorrent/read_resume_data.hpp>
+#include <fstream>
 
 namespace caracal {
 
@@ -28,10 +29,24 @@ namespace caracal {
         session_.~session();
     }
 
-    void LibTorrentSession::addMagnet(const std::string& magnet_uri) {
-        lt::add_torrent_params params = lt::parse_magnet_uri(magnet_uri);
-        params.save_path = storage_dir_;
-        session_.async_add_torrent(std::move(params));
+    void LibTorrentSession::add_magnet(const std::string& magnet_uri) {
+        std::ifstream ifs(".resume_file", std::ios_base::binary);
+        ifs.unsetf(std::ios_base::skipws);
+        std::vector<char> buf{
+            std::istream_iterator<char>(ifs), 
+            std::istream_iterator<char>()
+        };
+
+        lt::add_torrent_params magnet = lt::parse_magnet_uri(magnet_uri);
+        if (!buf.empty()) {
+            lt::add_torrent_params atp = lt::read_resume_data(buf);
+            if (atp.info_hashes == magnet.info_hashes) {
+                magnet = std::move(atp);
+            }
+        }
+
+        magnet.save_path = storage_dir_;
+        session_.async_add_torrent(std::move(magnet));
     }
 
     void LibTorrentSession::set_storage_dir(const std::string& path) {
@@ -39,8 +54,17 @@ namespace caracal {
     }
 
     std::vector<lt::alert*> LibTorrentSession::get_session_alerts() {
+        session_.post_torrent_updates();
         std::vector<lt::alert*> lt_alerts;
         session_.pop_alerts(&lt_alerts);
         return lt_alerts;
+    }
+
+    void LibTorrentSession::add_handle(const std::string& key, const lt::torrent_handle& handle) {
+        handle_map_[key] = handle;
+    }
+
+    lt::torrent_handle LibTorrentSession::get_handle(const std::string& key) {
+        return handle_map_[key];
     }
 } // caracal

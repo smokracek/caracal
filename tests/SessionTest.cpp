@@ -9,14 +9,24 @@ int main() try {
     const char* magnet_uri = "magnet:?xt=urn:btih:42FA7116F32802DC02F9173968F661B4876C5C48";
     add_magnet(magnet_uri);
     
-    for (;;) {
-        struct alert* alerts;
+    while (true) {
         int size;
-        alerts = get_alerts(&size);
+        alert* alerts = get_alerts(&size);
 
         for (int i = 0; i < size; i++) {
-            struct alert current = alerts[i];
-            std::cout << current.type << ": " << current.message << std::endl;
+            alert current = alerts[i];
+            if (strcmp(current.type, "state_update")) {
+                std::cout << current.type << ": " << current.message << std::endl;
+            }
+            if (current.has_stats == 1) {
+                torrent_stats stats = current.stats;
+                std::cout << '\r' << stats.state << ' '
+                          << (stats.download_rate / 1000) << " kB/s "
+                          << (stats.total_done / 1000) << " kB ("
+                          << (stats.progress_ppm / 10000) << "%) downloaded ("
+                          << stats.num_peers << " peers)\x1b[K";
+                std::cout.flush();
+            }
         }
 
         free_alerts(alerts);
