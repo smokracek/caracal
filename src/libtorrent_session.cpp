@@ -21,7 +21,8 @@ namespace caracal {
             lt::settings_pack::alert_mask, 
             lt::alert_category::status 
             | lt::alert_category::error
-            | lt::alert_category::storage);
+            | lt::alert_category::storage
+            | lt::alert_category::piece_progress);
         lt::session session_(params);
     };
 

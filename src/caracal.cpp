@@ -67,6 +67,10 @@ alert* get_alerts(int* size) {
         if (lt::alert_cast<lt::save_resume_data_failed_alert>(a)) {
         }
 
+        if (lt::alert_cast<lt::piece_finished_alert>(a)) {
+            std::cout << "\n\n" << a->message() << std::endl;
+        }
+
         if (auto st = lt::alert_cast<lt::state_update_alert>(a)) {
             if (st->status.empty()) continue;
 
@@ -74,8 +78,8 @@ alert* get_alerts(int* size) {
             // the status is for
             lt::torrent_status const& s = st->status[0];
             std::cout << '\r' << state(s.state) << ' '
-                        << (s.download_payload_rate / 1000) << " kB/s "
-                        << (s.total_done / 1000) << " kB ("
+                        << (s.download_payload_rate / 1000000) << " MB/s "
+                        << (s.total_done / 1000000) << " MB ("
                         << (s.progress_ppm / 10000) << "%) downloaded ("
                         << s.num_peers << " peers)\x1b[K";
             std::cout.flush();
