@@ -51,6 +51,7 @@ void run_torrent(const char* magnet_link) {
             }
         }
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        free_alerts(alerts);
     }
     done:
     std::cout << "Torrent finished" << std::endl;
