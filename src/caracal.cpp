@@ -77,12 +77,12 @@ alert* get_alerts(int* size) {
             // we only have a single torrent, so we know which one
             // the status is for
             lt::torrent_status const& s = st->status[0];
-            std::cout << '\r' << state(s.state) << ' '
-                        << (s.download_payload_rate / 1000000) << " MB/s "
-                        << (s.total_done / 1000000) << " MB ("
-                        << (s.progress_ppm / 10000) << "%) downloaded ("
-                        << s.num_peers << " peers)\x1b[K";
-            std::cout.flush();
+            alerts[i].type = TORRENT_STATE;
+            strncpy(alerts[i].torrent_state.state, state(s.state), sizeof(alerts[i].torrent_state.state));
+            alerts[i].torrent_state.download_payload_rate = s.download_payload_rate;
+            alerts[i].torrent_state.total_done = s.total_done;
+            alerts[i].torrent_state.progress_ppm = s.progress_ppm;
+            alerts[i].torrent_state.num_peers = s.num_peers;
         }
     }
     return alerts;

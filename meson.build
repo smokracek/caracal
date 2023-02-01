@@ -14,7 +14,8 @@ caracal_lib = library('caracal',
 
 client_demo = executable('client-demo',
                             ['client_demo.cpp'],
-                            include_directories : ['src', 'include'])
+                            include_directories : ['src', 'include'],
+                            link_with : caracal_lib)
 
 test_src = ['tests/SessionTest.cpp']
 
