@@ -40,9 +40,10 @@ void run_torrent(const char* magnet_link) {
                           << alerts[i].torrent_state.num_peers << " peers)\x1b[K";
                     std::cout.flush();
 
-                    // TODO figure out why this triggers at very beginning of torrent
+                    // TODO figure out why state == "finished" very beginning of torrent
                     // Probably need to research torrent state lifecycles
-                    if (strcmp(alerts[i].torrent_state.state, "finished")) {
+                    if ((strcmp(alerts[i].torrent_state.state, "finished") &&
+                        alerts[i].torrent_state.progress_ppm == 1000000)) {
                         goto done;
                     }
                     break;

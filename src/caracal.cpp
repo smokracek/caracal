@@ -17,10 +17,6 @@ void add_magnet(const char* magnet_uri) {
 }
 
 char const* state(lt::torrent_status::state_t s) {
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wcovered-switch-default"
-#endif
     switch(s) {
         case lt::torrent_status::checking_files: return "checking";
         case lt::torrent_status::downloading_metadata: return "dl metadata";
@@ -30,9 +26,6 @@ char const* state(lt::torrent_status::state_t s) {
         case lt::torrent_status::checking_resume_data: return "checking resume";
         default: return "<>";
     }
-#ifdef __clang_
-#pragma clang diagnostic pop
-#endif
 }
 
 alert* get_alerts(int* size) {
