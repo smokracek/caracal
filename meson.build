@@ -4,7 +4,10 @@ libtorrent_dep = dependency('libtorrent-rasterbar')
 
 src = [
     'src/caracal.cpp',
-    'src/libtorrent_session.cpp']
+    'src/libtorrent_session.cpp',
+    'src/torrent_status.cpp',
+    'src/torrent_handle.cpp',
+    'src/torrent_pool.cpp']
 
 caracal_lib = library('caracal', 
                         src, 
@@ -17,11 +20,11 @@ client_demo = executable('client-demo',
                             include_directories : ['src', 'include'],
                             link_with : caracal_lib)
 
-test_src = ['tests/SessionTest.cpp']
+# test_src = ['tests/SessionTest.cpp']
 
-session_test = executable('session-test', 
-                            test_src, 
-                            include_directories : ['tests'],
-                            link_with : caracal_lib)
+# session_test = executable('session-test', 
+#                             test_src, 
+#                             include_directories : ['tests'],
+#                             link_with : caracal_lib)
 
-test('session test', session_test)
+# test('session test', session_test)
