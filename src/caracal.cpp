@@ -10,9 +10,13 @@ void set_storage_dir(const char *path)
     caracal::LibTorrentSession::instance().set_storage_dir(path);
 }
 
-void add_magnet(const char *magnet_uri)
+torrent_handle_t add_magnet(const char *magnet_uri)
 {
-    return caracal::LibTorrentSession::instance().add_magnet(magnet_uri);
+    lt::torrent_handle lt_handle = caracal::LibTorrentSession::instance().add_magnet(magnet_uri);
+    torrent_handle_t handle = (torrent_handle_t)malloc(sizeof(torrent_handle_instance_t));
+    handle->id = lt_handle.id();
+    strncpy(handle->name, lt_handle.status(), sizeof(handle->name));
+    return handle;
 }
 
 status_type_t state(lt::torrent_status::state_t s)

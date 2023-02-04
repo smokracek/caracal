@@ -27,35 +27,6 @@ void view(std::vector<std::string> params)
 void run_torrent(const char *magnet_link)
 {
     std::cout << "Starting torrent" << std::endl;
-    add_magnet(magnet_link);
-    while (true)
-    {
-        int size;
-        status_alert_t *alerts = get_status_alerts(&size);
-
-        for (int i = 0; i < size; i++)
-        {
-            status_alert_t alert = alerts[i];
-            std::cout
-                << '\r' << get_status_type(alert) << ' '
-                << (get_download_payload_rate(alert) / 1000) << " kB/s "
-                << (get_total_done(alert) / 1000) << " kB ("
-                << (get_progress_ppm(alert) / 10000) << "%) downloaded ("
-                << get_num_peers(alert) << " peers)\x1b[K";
-            std::cout.flush();
-
-            // TODO figure out why state == "finished" very beginning of torrent
-            // Probably need to research torrent state lifecycles
-            if (get_status_type(alert) == FINISHED && get_progress_ppm(alert) == 1000000)
-            {
-                goto done;
-            }
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
-        free_status_alerts(alerts);
-    }
-done:
-    std::cout << "Torrent finished" << std::endl;
 }
 
 Command get_command(std::string word)

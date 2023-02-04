@@ -33,7 +33,7 @@ namespace caracal
         session_.~session();
     }
 
-    void LibTorrentSession::add_magnet(const std::string &magnet_uri)
+    lt::torrent_handle LibTorrentSession::add_magnet(const std::string &magnet_uri)
     {
         std::ifstream ifs(".resume_file", std::ios_base::binary);
         ifs.unsetf(std::ios_base::skipws);
@@ -52,7 +52,7 @@ namespace caracal
         }
 
         magnet.save_path = storage_dir_;
-        session_.async_add_torrent(std::move(magnet));
+        return session_.add_torrent(std::move(magnet));
     }
 
     void LibTorrentSession::set_storage_dir(const std::string &path)
