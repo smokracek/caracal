@@ -27,6 +27,8 @@ void view(std::vector<std::string> params)
 void run_torrent(const char *magnet_link)
 {
     std::cout << "Starting torrent" << std::endl;
+    torrent_handle_t handle = add_magnet(magnet_link);
+    std::cout << get_torrent_name(handle) << std::endl;
 }
 
 Command get_command(std::string word)

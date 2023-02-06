@@ -15,7 +15,7 @@ torrent_handle_t add_magnet(const char *magnet_uri)
     lt::torrent_handle lt_handle = caracal::LibTorrentSession::instance().add_magnet(magnet_uri);
     torrent_handle_t handle = (torrent_handle_t)malloc(sizeof(torrent_handle_instance_t));
     handle->id = lt_handle.id();
-    strncpy(handle->name, lt_handle.status(), sizeof(handle->name));
+    strncpy(handle->name, lt_handle.status().name.c_str(), sizeof(handle->name));
     return handle;
 }
 
