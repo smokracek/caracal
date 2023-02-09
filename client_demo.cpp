@@ -29,6 +29,11 @@ void run_torrent(const char *magnet_link)
     std::cout << "Starting torrent" << std::endl;
     torrent_handle_t handle = add_magnet(magnet_link);
     std::cout << get_torrent_name(handle) << std::endl;
+    while (true)
+    {
+        handle_alerts();
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+    }
 }
 
 Command get_command(std::string word)

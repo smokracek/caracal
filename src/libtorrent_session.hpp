@@ -10,26 +10,21 @@
 #include <unordered_map>
 #include <optional>
 
-namespace caracal
+class LibTorrentSession
 {
+public:
+    static LibTorrentSession &instance();
+    lt::torrent_handle add_magnet(const std::string &magnet_uri);
+    void set_storage_dir(const std::string &path);
+    std::vector<lt::alert *> get_session_alerts();
+    std::optional<lt::torrent_status> get_torrent_status(lt::torrent_handle handle);
 
-    class LibTorrentSession
-    {
-    public:
-        static LibTorrentSession &instance();
-        lt::torrent_handle add_magnet(const std::string &magnet_uri);
-        void set_storage_dir(const std::string &path);
-        std::vector<lt::alert *> get_session_alerts();
-        std::optional<lt::torrent_status> get_torrent_status(lt::torrent_handle handle);
+private:
+    LibTorrentSession();
+    ~LibTorrentSession();
 
-    private:
-        LibTorrentSession();
-        ~LibTorrentSession();
-
-        lt::session session_;
-        std::string storage_dir_;
-    };
-
-} // caracal
+    lt::session session_;
+    std::string storage_dir_;
+};
 
 #endif // CARACAL_CLIENT_SESSION_HPP

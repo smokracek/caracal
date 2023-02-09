@@ -12,6 +12,7 @@ extern "C"
     void set_storage_dir(const char *path);
     torrent_handle_t add_magnet(const char *magnet_uri);
     torrent_status_t get_torrent_status(torrent_handle_t);
+    void handle_alerts();
 
 #ifdef __cplusplus
 }

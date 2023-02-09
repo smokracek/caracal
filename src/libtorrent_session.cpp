@@ -9,63 +9,58 @@
 #include <libtorrent/torrent_handle.hpp>
 #include <fstream>
 
-namespace caracal
+LibTorrentSession &LibTorrentSession::instance()
 {
+    static LibTorrentSession *session = new LibTorrentSession();
+    return *session;
+}
 
-    LibTorrentSession &LibTorrentSession::instance()
+LibTorrentSession::LibTorrentSession()
+{
+    set_storage_dir(".");
+    lt::session_params params;
+    params.settings.set_int(
+        lt::settings_pack::alert_mask,
+        lt::alert_category::status | lt::alert_category::error | lt::alert_category::storage | lt::alert_category::piece_progress);
+    lt::session session_(params);
+};
+
+LibTorrentSession::~LibTorrentSession()
+{
+    session_.~session();
+}
+
+lt::torrent_handle LibTorrentSession::add_magnet(const std::string &magnet_uri)
+{
+    std::ifstream ifs(".resume_file", std::ios_base::binary);
+    ifs.unsetf(std::ios_base::skipws);
+    std::vector<char> buf{
+        std::istream_iterator<char>(ifs),
+        std::istream_iterator<char>()};
+
+    lt::add_torrent_params magnet = lt::parse_magnet_uri(magnet_uri);
+    if (!buf.empty())
     {
-        static LibTorrentSession *session = new LibTorrentSession();
-        return *session;
-    }
-
-    LibTorrentSession::LibTorrentSession()
-    {
-        set_storage_dir(".");
-        lt::session_params params;
-        params.settings.set_int(
-            lt::settings_pack::alert_mask,
-            lt::alert_category::status | lt::alert_category::error | lt::alert_category::storage | lt::alert_category::piece_progress);
-        lt::session session_(params);
-    };
-
-    LibTorrentSession::~LibTorrentSession()
-    {
-        session_.~session();
-    }
-
-    lt::torrent_handle LibTorrentSession::add_magnet(const std::string &magnet_uri)
-    {
-        std::ifstream ifs(".resume_file", std::ios_base::binary);
-        ifs.unsetf(std::ios_base::skipws);
-        std::vector<char> buf{
-            std::istream_iterator<char>(ifs),
-            std::istream_iterator<char>()};
-
-        lt::add_torrent_params magnet = lt::parse_magnet_uri(magnet_uri);
-        if (!buf.empty())
+        lt::add_torrent_params atp = lt::read_resume_data(buf);
+        if (atp.info_hashes == magnet.info_hashes)
         {
-            lt::add_torrent_params atp = lt::read_resume_data(buf);
-            if (atp.info_hashes == magnet.info_hashes)
-            {
-                magnet = std::move(atp);
-            }
+            magnet = std::move(atp);
         }
-
-        magnet.save_path = storage_dir_;
-        return session_.add_torrent(std::move(magnet));
     }
 
-    void LibTorrentSession::set_storage_dir(const std::string &path)
-    {
-        LibTorrentSession::storage_dir_ = path;
-    }
+    magnet.save_path = storage_dir_;
+    return session_.add_torrent(std::move(magnet));
+}
 
-    std::vector<lt::alert *> LibTorrentSession::get_session_alerts()
-    {
-        session_.post_torrent_updates();
-        std::vector<lt::alert *> lt_alerts;
-        session_.pop_alerts(&lt_alerts);
-        return lt_alerts;
-    }
+void LibTorrentSession::set_storage_dir(const std::string &path)
+{
+    LibTorrentSession::storage_dir_ = path;
+}
 
-} // caracal
+std::vector<lt::alert *> LibTorrentSession::get_session_alerts()
+{
+    session_.post_torrent_updates();
+    std::vector<lt::alert *> lt_alerts;
+    session_.pop_alerts(&lt_alerts);
+    return lt_alerts;
+}
