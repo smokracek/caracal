@@ -1,6 +1,11 @@
-project('Caracal', 'cpp', version : '0.1.0', default_options : ['cpp_std=c++17'])
+project('Caracal', 'cpp', version : '0.1.0', 
+    default_options : [
+        'cpp_std=c++17',
+        'buildtype=debug'])
 
 libtorrent_dep = dependency('libtorrent-rasterbar')
+
+op_level = 2
 
 src = [
     'src/caracal.cpp',
@@ -16,15 +21,6 @@ caracal_lib = library('caracal',
                         install : true)
 
 client_demo = executable('client-demo',
-                            ['client_demo.cpp'],
+                            ['demos/client_demo.cpp'],
                             include_directories : ['src', 'include'],
                             link_with : caracal_lib)
-
-# test_src = ['tests/SessionTest.cpp']
-
-# session_test = executable('session-test', 
-#                             test_src, 
-#                             include_directories : ['tests'],
-#                             link_with : caracal_lib)
-
-# test('session test', session_test)

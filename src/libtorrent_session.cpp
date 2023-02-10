@@ -1,4 +1,5 @@
 #include "libtorrent_session.hpp"
+#include "torrent_pool.hpp"
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/session_params.hpp>
 #include <libtorrent/settings_pack.hpp>
@@ -49,7 +50,9 @@ lt::torrent_handle LibTorrentSession::add_magnet(const std::string &magnet_uri)
     }
 
     magnet.save_path = storage_dir_;
-    return session_.add_torrent(std::move(magnet));
+    lt::torrent_handle handle = session_.add_torrent(std::move(magnet));
+    TorrentPool::instance().add_torrent(handle);
+    return handle;
 }
 
 void LibTorrentSession::set_storage_dir(const std::string &path)

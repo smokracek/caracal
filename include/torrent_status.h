@@ -16,10 +16,12 @@ extern "C"
         FINISHED,
         SEEDING,
         CHECKING_RESUME_DATA,
-        UNDEFINED
+        UNDEFINED,
+        STATUS_TYPE_T_COUNT
     } status_type_t;
 
     status_type_t get_status_type(torrent_status_t instance);
+    const char *get_status_type_string(torrent_status_t instance);
     int get_download_payload_rate(torrent_status_t instance);
     long get_total_done(torrent_status_t instance);
     int get_progress_ppm(torrent_status_t instance);

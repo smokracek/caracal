@@ -1,5 +1,6 @@
 #include "torrent_pool.hpp"
 #include <stdexcept>
+#include <iostream>
 
 TorrentPool &TorrentPool::instance()
 {
@@ -30,8 +31,7 @@ lt::torrent_handle TorrentPool::get_torrent(unsigned int id)
     }
     catch (std::exception &e)
     {
-        throw std::invalid_argument(
-            "Torrent handle not found with matching id " + std::to_string(id));
+        throw std::invalid_argument("Torrent handle not found with matching id " + std::to_string(id));
     }
 }
 
@@ -54,6 +54,7 @@ std::optional<lt::torrent_status> TorrentPool::get_torrent_status(unsigned int i
     }
     catch (std::exception &e)
     {
+        std::cerr << e.what() << std::endl;
         return std::nullopt;
     }
 }

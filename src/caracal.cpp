@@ -96,20 +96,5 @@ void handle_alerts()
                 of.write(b.data(), int(b.size()));
             }
         }
-        if (auto st = lt::alert_cast<lt::state_update_alert>(a))
-        {
-            if (st->status.empty())
-                continue;
-
-            // we only have a single torrent, so we know which one
-            // the status is for
-            lt::torrent_status const &s = st->status[0];
-            std::cout << '\r' << state(s.state) << ' '
-                      << (s.download_payload_rate / 1000) << " kB/s "
-                      << (s.total_done / 1000) << " kB ("
-                      << (s.progress_ppm / 10000) << "%) downloaded ("
-                      << s.num_peers << " peers)\x1b[K";
-            std::cout.flush();
-        }
     }
 }
