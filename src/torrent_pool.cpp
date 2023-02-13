@@ -10,7 +10,7 @@ TorrentPool &TorrentPool::instance()
 
 TorrentPool::TorrentPool()
 {
-    std::unordered_map<unsigned int, lt::torrent_handle> pool_;
+    std::unordered_map<size_t, lt::torrent_handle> pool_;
 }
 
 TorrentPool::~TorrentPool()
@@ -27,7 +27,7 @@ lt::torrent_handle TorrentPool::get_torrent(unsigned int id)
 {
     try
     {
-        pool_.at(id);
+        return pool_.at(id);
     }
     catch (std::exception &e)
     {

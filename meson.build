@@ -5,14 +5,14 @@ project('Caracal', 'cpp', version : '0.1.0',
 
 libtorrent_dep = dependency('libtorrent-rasterbar')
 
-op_level = 2
-
 src = [
     'src/caracal.cpp',
     'src/libtorrent_session.cpp',
     'src/torrent_status.cpp',
     'src/torrent_handle.cpp',
-    'src/torrent_pool.cpp']
+    'src/torrent_pool.cpp',
+    'src/magnet_pool.cpp',
+    'src/post_bundle.cpp']
 
 caracal_lib = library('caracal', 
                         src, 

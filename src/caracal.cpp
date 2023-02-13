@@ -3,17 +3,20 @@
 #include "torrent_pool.hpp"
 #include "torrent_status.h"
 #include "torrent_handle.h"
+#include "post_bundle.h"
+#include "magnet_pool.hpp"
 #include <libtorrent/torrent_status.hpp>
 #include <libtorrent/alert.hpp>
 #include <libtorrent/alert_types.hpp>
 #include <libtorrent/read_resume_data.hpp>
 #include <libtorrent/write_resume_data.hpp>
+#include <libtorrent/magnet_uri.hpp>
 #include <fstream>
 #include <iostream>
 
 void set_storage_dir(const char *path)
 {
-    LibTorrentSession::instance().set_storage_dir(path);
+    LibTorrentSession::instance().set_download_storage_dir(path);
 }
 
 torrent_handle_t add_magnet(const char *magnet_uri)
@@ -97,4 +100,36 @@ void handle_alerts()
             }
         }
     }
+}
+
+void create_magnet_uri(const char *file_name)
+{
+    lt::load_torrent_limits lt = {
+        .max_buffer_size = 10000000,
+        .max_pieces = 0x200000,
+        .max_decode_depth = 100,
+        .max_decode_tokens = 3000000};
+    lt::torrent_info ti((std::string(file_name) + ".torrent"), lt);
+    std::string uri(lt::make_magnet_uri(ti));
+
+    MagnetPool::instance().add_magnet(file_name, uri);
+}
+
+const char *get_magnet_uri(const char *file_name)
+{
+    std::string uri = MagnetPool::instance().get_magnet(std::string(file_name));
+    char *ret = (char *)malloc(uri.size() + 1);
+    strcpy(ret, uri.c_str());
+    return ret;
+}
+
+post_bundle_t create_post(const char *file_name)
+{
+    post_bundle_t post = (post_bundle_t)malloc(sizeof(post_bundle_instance_t));
+    LibTorrentSession::instance().create_torrent_file(std::string(file_name));
+    create_magnet_uri(file_name);
+    strncpy(post->title, file_name, sizeof(post->title));
+    strncpy(post->magnet, get_magnet_uri(file_name), sizeof(post->magnet));
+
+    return post;
 }
