@@ -21,12 +21,15 @@ void post(std::vector<std::string> params)
     post_bundle_t post = {};
     if (params.size() != 2)
     {
-        std::cout << "Please provide a -f flag followed by a file path." << std::endl;
+        std::cout << "Please provide a -f flag followed by a file path relative to the client's location." << std::endl;
         return;
     }
     if (params.front() == "-f")
     {
         post = create_post(params.back().c_str());
+        if (std::string(get_post_title(post)) == "" && std::string(get_post_magnet(post)) == "")
+            return;
+
         std::cout << "Title: " << get_post_title(post) << std::endl;
         std::cout << "Magnet: " << get_post_magnet(post) << std::endl;
         return;
@@ -88,7 +91,7 @@ void run_torrent(std::vector<std::string> params)
 
         std::cout << '\r' << status_type
                   << ": " << get_num_peers(status) << " peers, "
-                  << ((float)get_progress_ppm(status) / 10000) << "% finished";
+                  << ((double)get_progress_ppm(status) / 10000) << "% finished";
         std::cout.flush();
         std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
@@ -102,7 +105,7 @@ Command get_command(std::string word)
         return Command::POST;
     if (word == "view")
         return Command::POST;
-    if (word == "exit")
+    if (word == "exit" || word == "quit" || word == "q")
         return Command::EXIT;
     if (word == "torrent")
         return Command::RUN_TORRENT;
@@ -124,9 +127,10 @@ std::vector<std::string> split(const std::string &s)
 
 int main_loop()
 {
-    std::cout << "Welcome to the Caracal demo client." << std::endl;
+    std::cout << "Welcome to the Caracal demo client.\n\n"
+              << std::endl;
 
-    for (;;)
+    while (true)
     {
         std::cout << "caracal> ";
         std::string input;

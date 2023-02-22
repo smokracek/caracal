@@ -6,8 +6,16 @@ extern "C"
 {
 #endif
 
+    /**
+     * Holds snapshot status data for queried torrent.
+     */
     typedef struct torrent_status_instance_t *torrent_status_t;
 
+    /**
+     * Possible status types.
+     * Also includes the count of possible status types, always as the last member,
+     * for easy creation of indexed string translation arrays.
+     */
     typedef enum
     {
         CHECKING_FILES,

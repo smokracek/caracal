@@ -1,5 +1,4 @@
 #include "libtorrent_session.hpp"
-#include "torrent_pool.hpp"
 #include <libtorrent/magnet_uri.hpp>
 #include <libtorrent/session_params.hpp>
 #include <libtorrent/settings_pack.hpp>
@@ -14,7 +13,8 @@
 #include <libtorrent/entry.hpp>
 #include <fstream>
 #include <iostream>
-#include <functional>
+#include <filesystem>
+#include <stdexcept>
 
 LibTorrentSession &LibTorrentSession::instance()
 {
@@ -57,7 +57,6 @@ lt::torrent_handle LibTorrentSession::add_magnet(const std::string &magnet_uri)
 
     magnet.save_path = download_storage_dir_;
     lt::torrent_handle handle = session_.add_torrent(std::move(magnet));
-    TorrentPool::instance().add_torrent(handle);
     return handle;
 }
 
@@ -79,12 +78,18 @@ std::vector<lt::alert *> LibTorrentSession::get_session_alerts()
     return lt_alerts;
 }
 
-void LibTorrentSession::create_torrent_file(const std::string &file_path)
+void LibTorrentSession::create_torrent_file(const std::string &file_name)
 {
+#ifdef _WIN32
+    std::string file_path(std::filesystem::current_path().string() + "\\" + file_name);
+#else
+    std::string file_path(std::filesystem::current_path().string() + "/" + file_name);
+#endif
 
-    std::ifstream file(file_path, std::ios::binary | std::ios::ate);
-    std::int64_t size = file.tellg();
-    file.close();
+    if (!std::filesystem::exists(file_path))
+    {
+        throw std::ifstream::failure("Error: File not found on path " + file_path);
+    }
 
     std::string outfile = file_path + ".torrent";
     std::string parent_dir = file_path.substr(0, file_path.find_last_of("/\\"));
@@ -92,17 +97,18 @@ void LibTorrentSession::create_torrent_file(const std::string &file_path)
     lt::file_storage fs;
     int piece_size = 0;
     lt::create_flags_t flags = {};
-    fs.add_file(file_path, size);
+    lt::add_files(fs, file_path, flags);
 
     lt::create_torrent t(fs, piece_size, flags);
 
-    lt::error_code ec;
-    lt::set_piece_hashes(t, parent_dir, ec);
-
-    if (ec)
+    try
     {
-        std::cout << "Error setting piece hashes: " << ec.message() << std::endl;
-        return;
+        lt::set_piece_hashes(t, parent_dir);
+    }
+    catch (const std::exception &e)
+    {
+        std::string what(e.what());
+        throw std::runtime_error("Error setting piece hashes: " + what);
     }
 
     std::vector<char> torrent;
@@ -110,4 +116,12 @@ void LibTorrentSession::create_torrent_file(const std::string &file_path)
     std::fstream out;
     out.open(outfile.c_str(), std::ios_base::out | std::ios_base::binary);
     out.write(torrent.data(), int(torrent.size()));
+}
+
+void LibTorrentSession::set_dht_bootstrap_nodes(std::vector<std::pair<std::string, int>> nodes)
+{
+    for (auto node : nodes)
+    {
+        session_.add_dht_node(node);
+    }
 }

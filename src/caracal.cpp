@@ -12,7 +12,11 @@
 #include <libtorrent/write_resume_data.hpp>
 #include <libtorrent/magnet_uri.hpp>
 #include <fstream>
+#include <algorithm>
+#include <cctype>
+#include <sstream>
 #include <iostream>
+#include <utility>
 
 void set_storage_dir(const char *path)
 {
@@ -22,6 +26,8 @@ void set_storage_dir(const char *path)
 torrent_handle_t add_magnet(const char *magnet_uri)
 {
     lt::torrent_handle lt_handle = LibTorrentSession::instance().add_magnet(magnet_uri);
+    TorrentPool::instance().add_torrent(lt_handle);
+    MagnetPool::instance().add_magnet(lt_handle.status().name, std::string(magnet_uri));
     torrent_handle_t handle = (torrent_handle_t)malloc(sizeof(torrent_handle_instance_t));
     handle->id = lt_handle.id();
     strncpy(handle->name, lt_handle.status().name.c_str(), sizeof(handle->name));
@@ -126,10 +132,51 @@ const char *get_magnet_uri(const char *file_name)
 post_bundle_t create_post(const char *file_name)
 {
     post_bundle_t post = (post_bundle_t)malloc(sizeof(post_bundle_instance_t));
-    LibTorrentSession::instance().create_torrent_file(std::string(file_name));
+
+    try
+    {
+        LibTorrentSession::instance().create_torrent_file(std::string(file_name));
+    }
+    catch (const std::exception &e)
+    {
+        std::cout << e.what() << "\n"
+                  << "Returning to main." << std::endl;
+        return post;
+    }
+
     create_magnet_uri(file_name);
     strncpy(post->title, file_name, sizeof(post->title));
     strncpy(post->magnet, get_magnet_uri(file_name), sizeof(post->magnet));
 
     return post;
+}
+
+void set_dht_bootstrap_nodes(const char *node_list)
+{
+    std::string input(node_list);
+    input.erase(std::remove_if(input.begin(), input.end(),
+                               [](unsigned char c)
+                               { return std::isspace(c); }),
+                input.end());
+
+    std::vector<std::string> tokens;
+    std::stringstream ss(input);
+    std::string token;
+    while (std::getline(ss, token, ','))
+    {
+        tokens.push_back(token);
+    }
+
+    std::vector<std::pair<std::string, int>> pairs;
+    for (auto token : tokens)
+    {
+        std::stringstream sst(token);
+        std::string url, port;
+        std::getline(sst, url, ':');
+        std::getline(sst, port);
+        std::pair<std::string, int> pair = {url, std::stoi(port)};
+        pairs.push_back(pair);
+    }
+
+    LibTorrentSession::instance().set_dht_bootstrap_nodes(pairs);
 }

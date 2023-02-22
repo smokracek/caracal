@@ -1,6 +1,6 @@
 #include "torrent_handle.h"
 
-unsigned int get_torrent_handle_id(torrent_handle_t instance)
+unsigned int get_torrent_id(torrent_handle_t instance)
 {
     return instance->id;
 }

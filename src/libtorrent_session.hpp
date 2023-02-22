@@ -20,6 +20,7 @@ public:
     std::vector<lt::alert *> get_session_alerts();
     std::optional<lt::torrent_status> get_torrent_status(lt::torrent_handle handle);
     void create_torrent_file(const std::string &path);
+    void set_dht_bootstrap_nodes(std::vector<std::pair<std::string, int>> nodes);
 
 private:
     LibTorrentSession();
@@ -28,6 +29,7 @@ private:
     lt::session session_;
     std::string download_storage_dir_;
     std::string post_storage_dir_;
+    std::string dht_bootstrap_nodes_;
 };
 
 #endif // CARACAL_CLIENT_SESSION_HPP
