@@ -1,6 +1,6 @@
 #include "../include/post_bundle.h"
 
-typedef struct post_bundle_instance_t
+typedef struct _post_bundle_instance_t
 {
     char title[256];
     char magnet[1024];

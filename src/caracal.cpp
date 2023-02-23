@@ -28,7 +28,7 @@ torrent_handle_t add_magnet(const char *magnet_uri)
     lt::torrent_handle lt_handle = LibTorrentSession::instance().add_magnet(magnet_uri);
     TorrentPool::instance().add_torrent(lt_handle);
     MagnetPool::instance().add_magnet(lt_handle.status().name, std::string(magnet_uri));
-    torrent_handle_t handle = (torrent_handle_t)malloc(sizeof(torrent_handle_instance_t));
+    torrent_handle_t handle = (torrent_handle_t)malloc(sizeof(_torrent_handle_instance_t));
     handle->id = lt_handle.id();
     strncpy(handle->name, lt_handle.status().name.c_str(), sizeof(handle->name));
     return handle;
@@ -58,7 +58,7 @@ status_type_t state(lt::torrent_status::state_t s)
 torrent_status_t get_torrent_status(torrent_handle_t handle)
 {
     std::optional<lt::torrent_status> opt_lt_status = TorrentPool::instance().get_torrent_status(handle->id);
-    torrent_status_t status = (torrent_status_t)malloc(sizeof(torrent_status_instance_t));
+    torrent_status_t status = (torrent_status_t)malloc(sizeof(_torrent_status_instance_t));
     if (opt_lt_status.has_value())
     {
         lt::torrent_status lt_status = opt_lt_status.value();
@@ -131,7 +131,7 @@ const char *get_magnet_uri(const char *file_name)
 
 post_bundle_t create_post(const char *file_name)
 {
-    post_bundle_t post = (post_bundle_t)malloc(sizeof(post_bundle_instance_t));
+    post_bundle_t post = (post_bundle_t)malloc(sizeof(_post_bundle_instance_t));
 
     try
     {

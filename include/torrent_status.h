@@ -9,7 +9,7 @@ extern "C"
     /**
      * Holds snapshot status data for queried torrent.
      */
-    typedef struct torrent_status_instance_t *torrent_status_t;
+    typedef struct _torrent_status_instance_t *torrent_status_t;
 
     /**
      * Possible status types.

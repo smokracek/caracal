@@ -1,6 +1,6 @@
 #include "../include/torrent_status.h"
 
-typedef struct torrent_status_instance_t
+typedef struct _torrent_status_instance_t
 {
     status_type_t type;
     int download_payload_rate;

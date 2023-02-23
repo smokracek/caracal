@@ -9,7 +9,7 @@ extern "C"
     /**
      * Holds info about a post.
      */
-    typedef struct post_bundle_instance_t *post_bundle_t;
+    typedef struct _post_bundle_instance_t *post_bundle_t;
 
     /**
      * Gets the title of the post. Derived from original post file name.

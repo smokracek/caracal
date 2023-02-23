@@ -9,7 +9,7 @@ extern "C"
     /**
      * Holds info about an initialized torrent.
      */
-    typedef struct torrent_handle_instance_t *torrent_handle_t;
+    typedef struct _torrent_handle_instance_t *torrent_handle_t;
 
     /**
      * Gives the unique (to this session) ID of an initialized torrent.
