@@ -1,5 +1,5 @@
 /.idea
 /cmake-build-debug
-/.vscode
 /builddir
 .DS_Store
+magnets.txt
