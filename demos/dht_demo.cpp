@@ -1,12 +1,13 @@
 #include "../include/caracal.h"
 #include <iostream>
 #include <string>
+#include <stdexcept>
 
 int main(int argc, char *argv[])
 {
     if (argc != 3)
     {
-        std::cerr << "Recieved wrong number of arguments" << std::endl;
+        std::cerr << "Error: Recieved wrong number of arguments" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -30,7 +31,7 @@ int main(int argc, char *argv[])
     }
     catch (const std::exception &e)
     {
-        std::cerr << e.what() << '\n';
+        std::cerr << e.what() << "\n";
         return EXIT_FAILURE;
     }
 

@@ -12,6 +12,8 @@
 #include <libtorrent/bencode.hpp>
 #include <libtorrent/entry.hpp>
 #include <fstream>
+#include <thread>
+#include <chrono>
 #include <iostream>
 #include <filesystem>
 #include <stdexcept>
@@ -124,4 +126,26 @@ void LibTorrentSession::set_dht_bootstrap_nodes(std::vector<std::pair<std::strin
     {
         session_.add_dht_node(node);
     }
+
+    int i = 0;
+    while (i < 30)
+    {
+        std::vector<lt::udp::endpoint> dht_nodes = session_.session_state(lt::session_handle::save_dht_state).dht_state.nodes;
+        if (dht_nodes.size() == 0)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        }
+        else
+        {
+
+            std::cout << "Current DHT Nodes:" << std::endl;
+            for (auto node : dht_nodes)
+            {
+                std::cout << node.address() << ":" << node.port() << std::endl;
+            }
+            return;
+        }
+        i++;
+    }
+    throw std::runtime_error("Failed to connect to any DHT nodes");
 }

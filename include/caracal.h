@@ -46,7 +46,7 @@ extern "C"
      * Sets servers to use to bootstrap the DHT network connection.
      * @param ip_port_list A comma separated list of nodes in `0.0.0.0:0000` format.
      */
-    void set_dht_bootstrap_nodes(const char *ip_port_list);
+    int set_dht_bootstrap_nodes(const char *ip_port_list);
 
 #ifdef __cplusplus
 }

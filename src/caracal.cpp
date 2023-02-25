@@ -151,7 +151,7 @@ post_bundle_t create_post(const char *file_name)
     return post;
 }
 
-void set_dht_bootstrap_nodes(const char *node_list)
+int set_dht_bootstrap_nodes(const char *node_list)
 {
     std::string input(node_list);
     input.erase(std::remove_if(input.begin(), input.end(),
@@ -178,5 +178,13 @@ void set_dht_bootstrap_nodes(const char *node_list)
         pairs.push_back(pair);
     }
 
-    LibTorrentSession::instance().set_dht_bootstrap_nodes(pairs);
+    try
+    {
+        LibTorrentSession::instance().set_dht_bootstrap_nodes(pairs);
+    }
+    catch (const std::exception &e)
+    {
+        return EXIT_FAILURE;
+    }
+    return EXIT_SUCCESS;
 }
