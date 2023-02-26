@@ -57,7 +57,7 @@ void run_torrent(std::vector<std::string> params)
     }
     if (params.front() == "-l")
     {
-        handle = add_magnet(params.back().c_str());
+        handle = download_post(params.back().c_str());
     }
     else if (params.front() == "-f")
     {
@@ -69,7 +69,7 @@ void run_torrent(std::vector<std::string> params)
         }
         std::string magnet_link;
         std::getline(in_file, magnet_link);
-        handle = add_magnet(magnet_link.c_str());
+        handle = download_post(magnet_link.c_str());
         in_file.close();
     }
     else
@@ -82,7 +82,7 @@ void run_torrent(std::vector<std::string> params)
     while (true)
     {
         handle_alerts();
-        torrent_status_t status = get_torrent_status(handle);
+        download_status_t status = get_download_status(handle);
         if (get_status_type(status) == FINISHED)
         {
             break;

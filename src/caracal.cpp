@@ -1,7 +1,7 @@
 #include "../include/caracal.h"
 #include "libtorrent_session.hpp"
 #include "torrent_pool.hpp"
-#include "torrent_status.h"
+#include "download_status.h"
 #include "torrent_handle.h"
 #include "post_bundle.h"
 #include "magnet_pool.hpp"
@@ -23,7 +23,7 @@ void set_storage_dir(const char *path)
     LibTorrentSession::instance().set_download_storage_dir(path);
 }
 
-torrent_handle_t add_magnet(const char *magnet_uri)
+torrent_handle_t download_post(const char *magnet_uri)
 {
     lt::torrent_handle lt_handle = LibTorrentSession::instance().add_magnet(magnet_uri);
     TorrentPool::instance().add_torrent(lt_handle);
@@ -55,10 +55,10 @@ status_type_t state(lt::torrent_status::state_t s)
     }
 }
 
-torrent_status_t get_torrent_status(torrent_handle_t handle)
+download_status_t get_download_status(torrent_handle_t handle)
 {
     std::optional<lt::torrent_status> opt_lt_status = TorrentPool::instance().get_torrent_status(handle->id);
-    torrent_status_t status = (torrent_status_t)malloc(sizeof(_torrent_status_instance_t));
+    download_status_t status = (download_status_t)malloc(sizeof(_download_status_instance_t));
     if (opt_lt_status.has_value())
     {
         lt::torrent_status lt_status = opt_lt_status.value();

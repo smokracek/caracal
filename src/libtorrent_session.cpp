@@ -137,7 +137,6 @@ void LibTorrentSession::set_dht_bootstrap_nodes(std::vector<std::pair<std::strin
         }
         else
         {
-
             std::cout << "Current DHT Nodes:" << std::endl;
             for (auto node : dht_nodes)
             {

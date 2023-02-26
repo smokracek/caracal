@@ -6,7 +6,7 @@ extern "C"
 {
 #endif
 
-#include "torrent_status.h"
+#include "download_status.h"
 #include "torrent_handle.h"
 #include "post_bundle.h"
 
@@ -17,18 +17,18 @@ extern "C"
     void set_storage_dir(const char *path);
 
     /**
-     * Initiates a torrent using the provided magnet link.
+     * Initiates a post download using the provided magnet link.
      * @param magnet_uri A valid magnet link.
      * @return A handle to the torrent.
      */
-    torrent_handle_t add_magnet(const char *magnet_uri);
+    torrent_handle_t download_post(const char *magnet_uri);
 
     /**
-     * Returns a status about the handle's corresponding torrent.
-     * @param handle Handle to an initiated torrent.
+     * Returns a status about the handle's corresponding download.
+     * @param handle Handle to an initiated download.
      * @return An object holding a snapshot of download state.
      */
-    torrent_status_t get_torrent_status(torrent_handle_t handle);
+    download_status_t get_download_status(torrent_handle_t handle);
 
     /**
      * To be deprecated. Opaquely handles the libTorrent session alerts.

@@ -8,7 +8,7 @@ libtorrent_dep = dependency('libtorrent-rasterbar')
 src = [
     'src/caracal.cpp',
     'src/libtorrent_session.cpp',
-    'src/torrent_status.cpp',
+    'src/download_status.cpp',
     'src/torrent_handle.cpp',
     'src/torrent_pool.cpp',
     'src/magnet_pool.cpp',
@@ -27,5 +27,10 @@ client_demo = executable('client-demo',
 
 dht_demo = executable('dht-demo',
                             ['demos/dht_demo.cpp'],
+                            include_directories : ['src', 'include'],
+                            link_with : caracal_lib)
+
+seed_demo = executable('seed-demo',
+                            ['demos/seed_demo.cpp'],
                             include_directories : ['src', 'include'],
                             link_with : caracal_lib)

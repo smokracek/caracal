@@ -1,5 +1,5 @@
-#ifndef CARACAL_TORRENT_STATUS_H
-#define CARACAL_TORRENT_STATUS_H
+#ifndef CARACAL_DOWNLOAD_STATUS_H
+#define CARACAL_DOWNLOAD_STATUS_H
 
 #ifdef __cplusplus
 extern "C"
@@ -9,7 +9,7 @@ extern "C"
     /**
      * Holds snapshot status data for queried torrent.
      */
-    typedef struct _torrent_status_instance_t *torrent_status_t;
+    typedef struct _download_status_instance_t *download_status_t;
 
     /**
      * Possible status types.
@@ -28,12 +28,12 @@ extern "C"
         STATUS_TYPE_T_COUNT
     } status_type_t;
 
-    status_type_t get_status_type(torrent_status_t instance);
-    const char *get_status_type_string(torrent_status_t instance);
-    int get_download_payload_rate(torrent_status_t instance);
-    long get_total_done(torrent_status_t instance);
-    int get_progress_ppm(torrent_status_t instance);
-    int get_num_peers(torrent_status_t instance);
+    status_type_t get_status_type(download_status_t instance);
+    const char *get_status_type_string(download_status_t instance);
+    int get_download_payload_rate(download_status_t instance);
+    long get_total_done(download_status_t instance);
+    int get_progress_ppm(download_status_t instance);
+    int get_num_peers(download_status_t instance);
 
 #ifdef __cplusplus
 }
