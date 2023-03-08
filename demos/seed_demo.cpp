@@ -11,7 +11,11 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    set_dht_bootstrap_nodes("router.utorrent.com:6881,router.bittorent.com:6881");
+    if (set_dht_bootstrap_nodes("router.utorrent.com:6881,router.bittorent.com:6881") == EXIT_FAILURE)
+    {
+        std::cout << "Failed to set bootstrap nodes" << std::endl;
+        return EXIT_FAILURE;
+    }
 
     const char *file_path = argv[1];
     post_bundle_t bundle = create_post(file_path);
