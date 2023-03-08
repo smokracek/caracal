@@ -9,3 +9,8 @@ const char *get_post_magnet(post_bundle_t instance)
 {
     return instance->magnet;
 }
+
+const char *get_post_path(post_bundle_t instance)
+{
+    return instance->path;
+}

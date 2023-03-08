@@ -11,16 +11,19 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    const char *magnet_link = argv[1];
+    set_dht_bootstrap_nodes("router.utorrent.com:6881,router.bittorent.com:6881");
 
-    torrent_handle_t seeded_torrent = download_post(magnet_link);
+    const char *file_path = argv[1];
+    post_bundle_t bundle = create_post(file_path);
+    torrent_handle_t handle = seed_file(bundle);
+    std::cout << "Magnet: " << get_post_magnet(bundle) << std::endl;
 
     while (true)
     {
-        download_status_t status = get_download_status(seeded_torrent);
-        std::cout << "Status type: " << get_status_type_string(status) << std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+        handle_alerts();
+        torrent_status_t status = get_torrent_status(handle);
+        std::cout << "\r" << get_status_type_string(status);
+        std::cout.flush();
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
     }
-
-    return EXIT_SUCCESS;
 }

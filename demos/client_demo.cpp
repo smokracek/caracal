@@ -82,7 +82,7 @@ void run_torrent(std::vector<std::string> params)
     while (true)
     {
         handle_alerts();
-        download_status_t status = get_download_status(handle);
+        torrent_status_t status = get_torrent_status(handle);
         if (get_status_type(status) == FINISHED)
         {
             break;
@@ -127,8 +127,9 @@ std::vector<std::string> split(const std::string &s)
 
 int main_loop()
 {
-    std::cout << "Welcome to the Caracal demo client.\n\n"
-              << std::endl;
+    std::cout << "Welcome to the Caracal demo client.\n\n";
+
+    set_dht_bootstrap_nodes("router.utorrent.com:6881,router.bittorent.com:6881");
 
     while (true)
     {

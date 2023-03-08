@@ -8,7 +8,7 @@ libtorrent_dep = dependency('libtorrent-rasterbar')
 src = [
     'src/caracal.cpp',
     'src/libtorrent_session.cpp',
-    'src/download_status.cpp',
+    'src/torrent_status.cpp',
     'src/torrent_handle.cpp',
     'src/torrent_pool.cpp',
     'src/magnet_pool.cpp',

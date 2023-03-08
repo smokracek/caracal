@@ -25,6 +25,13 @@ extern "C"
      */
     const char *get_post_magnet(post_bundle_t instance);
 
+    /**
+     * Gets the path to the file containing the post
+     * @param instance A post bundle.
+     * @return The path to the file.
+     */
+    const char *get_post_path(post_bundle_t instance);
+
 #ifdef __cplusplus
 }
 #endif

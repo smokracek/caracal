@@ -15,19 +15,18 @@ class LibTorrentSession
 public:
     static LibTorrentSession &instance();
     lt::torrent_handle add_magnet(const std::string &magnet_uri);
-    void set_download_storage_dir(const std::string &path);
     void set_post_storage_dir(const std::string &path);
     std::vector<lt::alert *> get_session_alerts();
     std::optional<lt::torrent_status> get_torrent_status(lt::torrent_handle handle);
     void create_torrent_file(const std::string &path);
     void set_dht_bootstrap_nodes(std::vector<std::pair<std::string, int>> nodes);
+    lt::torrent_handle seed_torrent(const std::string &path);
 
 private:
     LibTorrentSession();
     ~LibTorrentSession();
 
     lt::session session_;
-    std::string download_storage_dir_;
     std::string post_storage_dir_;
     std::string dht_bootstrap_nodes_;
 };

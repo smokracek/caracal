@@ -84,6 +84,14 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "functional": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "regex": "cpp",
+        "semaphore": "cpp",
+        "*.tcc": "cpp",
+        "iterator": "cpp",
+        "memory_resource": "cpp",
+        "utility": "cpp",
+        "stop_token": "cpp",
+        "cinttypes": "cpp"
     }
 }

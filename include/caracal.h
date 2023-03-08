@@ -6,15 +6,20 @@ extern "C"
 {
 #endif
 
-#include "download_status.h"
+#include "torrent_status.h"
 #include "torrent_handle.h"
 #include "post_bundle.h"
+
+    /**
+     * Initializes the session.
+     */
+    void init_session(void);
 
     /**
      * Sets the storage directory for downloaded files.
      * @param path absolute path to directory.
      */
-    void set_storage_dir(const char *path);
+    void set_post_storage_dir(const char *path);
 
     /**
      * Initiates a post download using the provided magnet link.
@@ -24,11 +29,11 @@ extern "C"
     torrent_handle_t download_post(const char *magnet_uri);
 
     /**
-     * Returns a status about the handle's corresponding download.
-     * @param handle Handle to an initiated download.
-     * @return An object holding a snapshot of download state.
+     * Returns a status about the handle's corresponding torrent.
+     * @param handle Handle to an initiated torrent.
+     * @return An object holding a snapshot of torrent state.
      */
-    download_status_t get_download_status(torrent_handle_t handle);
+    torrent_status_t get_torrent_status(torrent_handle_t handle);
 
     /**
      * To be deprecated. Opaquely handles the libTorrent session alerts.
@@ -36,7 +41,7 @@ extern "C"
     void handle_alerts(void);
 
     /**
-     * Creates a torrent file and post bundle.
+     * Creates a post bundle.
      * @param file_name The relative path to the file.
      * @return A post bundle descriptor of the torrent.
      */
@@ -44,9 +49,31 @@ extern "C"
 
     /**
      * Sets servers to use to bootstrap the DHT network connection.
-     * @param ip_port_list A comma separated list of nodes in `0.0.0.0:0000` format.
+     * @param url_port_list A comma separated list of nodes in `url:xxxx` format.
+     * @return Integer representing success, 0 - success, 1 - failure
      */
-    int set_dht_bootstrap_nodes(const char *ip_port_list);
+    int set_dht_bootstrap_nodes(const char *url_port_list);
+
+    /**
+     * Sets the URL of the magnet repository server
+     * @param url_port_pair A string in the format `url:xxxx`.
+     * @return Integer representing success, 0 - success, 1 - failure
+     */
+    int set_magnet_repo(const char *url_port_pair);
+
+    /**
+     * Sends the post to the set magnet repo
+     * @param post Post bundle containing info about the post
+     * @return Integer representing success, 0 - success, 1 - failure
+     */
+    int send_post(post_bundle_t post);
+
+    /**
+     * Begins seeding the file the post bundle points to.
+     * @param post Post bundle containing info about the post
+     * @return Integer representing success, 0 - success, 1 - failure
+     */
+    torrent_handle_t seed_file(post_bundle_t post);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 #include "../include/caracal.h"
 #include "libtorrent_session.hpp"
 #include "torrent_pool.hpp"
-#include "download_status.h"
+#include "torrent_status.h"
 #include "torrent_handle.h"
 #include "post_bundle.h"
 #include "magnet_pool.hpp"
@@ -18,9 +18,14 @@
 #include <iostream>
 #include <utility>
 
-void set_storage_dir(const char *path)
+void init_session(void)
 {
-    LibTorrentSession::instance().set_download_storage_dir(path);
+    LibTorrentSession::instance();
+}
+
+void set_post_storage_dir(const char *path)
+{
+    LibTorrentSession::instance().set_post_storage_dir(path);
 }
 
 torrent_handle_t download_post(const char *magnet_uri)
@@ -55,10 +60,10 @@ status_type_t state(lt::torrent_status::state_t s)
     }
 }
 
-download_status_t get_download_status(torrent_handle_t handle)
+torrent_status_t get_torrent_status(torrent_handle_t handle)
 {
     std::optional<lt::torrent_status> opt_lt_status = TorrentPool::instance().get_torrent_status(handle->id);
-    download_status_t status = (download_status_t)malloc(sizeof(_download_status_instance_t));
+    torrent_status_t status = (torrent_status_t)malloc(sizeof(_torrent_status_instance_t));
     if (opt_lt_status.has_value())
     {
         lt::torrent_status lt_status = opt_lt_status.value();
@@ -132,6 +137,7 @@ const char *get_magnet_uri(const char *file_name)
 post_bundle_t create_post(const char *file_name)
 {
     post_bundle_t post = (post_bundle_t)malloc(sizeof(_post_bundle_instance_t));
+    strncpy(post->path, file_name, sizeof(post->path));
 
     try
     {
@@ -181,10 +187,31 @@ int set_dht_bootstrap_nodes(const char *node_list)
     try
     {
         LibTorrentSession::instance().set_dht_bootstrap_nodes(pairs);
+        std::cout << "Successfully set DHT bootstrap nodes:\n"
+                  << node_list << std::endl;
     }
     catch (const std::exception &e)
     {
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
+}
+
+torrent_handle_t seed_file(post_bundle_t post)
+{
+    torrent_handle_t handle = (torrent_handle_t)malloc(sizeof(torrent_handle_t));
+    try
+    {
+        lt::torrent_handle lt_handle = LibTorrentSession::instance().seed_torrent(post->path);
+        MagnetPool::instance().add_magnet(std::string(post->title), std::string(post->magnet));
+        TorrentPool::instance().add_torrent(lt_handle);
+        std::cout << "Seeded file: " << post->title << std::endl;
+        handle->id = lt_handle.id();
+        strncpy(handle->name, lt_handle.status().name.c_str(), sizeof(handle->name));
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+    }
+    return handle;
 }

@@ -26,7 +26,7 @@ LibTorrentSession &LibTorrentSession::instance()
 
 LibTorrentSession::LibTorrentSession()
 {
-    set_download_storage_dir(".");
+    set_post_storage_dir(".");
     lt::session_params params;
     params.settings.set_int(
         lt::settings_pack::alert_mask,
@@ -41,30 +41,11 @@ LibTorrentSession::~LibTorrentSession()
 
 lt::torrent_handle LibTorrentSession::add_magnet(const std::string &magnet_uri)
 {
-    std::ifstream ifs(".resume_file", std::ios_base::binary);
-    ifs.unsetf(std::ios_base::skipws);
-    std::vector<char> buf{
-        std::istream_iterator<char>(ifs),
-        std::istream_iterator<char>()};
-
     lt::add_torrent_params magnet = lt::parse_magnet_uri(magnet_uri);
-    if (!buf.empty())
-    {
-        lt::add_torrent_params atp = lt::read_resume_data(buf);
-        if (atp.info_hashes == magnet.info_hashes)
-        {
-            magnet = std::move(atp);
-        }
-    }
 
-    magnet.save_path = download_storage_dir_;
+    magnet.save_path = post_storage_dir_;
     lt::torrent_handle handle = session_.add_torrent(std::move(magnet));
     return handle;
-}
-
-void LibTorrentSession::set_download_storage_dir(const std::string &path)
-{
-    LibTorrentSession::download_storage_dir_ = path;
 }
 
 void LibTorrentSession::set_post_storage_dir(const std::string &path)
@@ -147,4 +128,13 @@ void LibTorrentSession::set_dht_bootstrap_nodes(std::vector<std::pair<std::strin
         i++;
     }
     throw std::runtime_error("Failed to connect to any DHT nodes");
+}
+
+lt::torrent_handle LibTorrentSession::seed_torrent(const std::string &path)
+{
+    lt::add_torrent_params params;
+    params.save_path = "../" + post_storage_dir_;
+    params.ti = std::make_shared<lt::torrent_info>(std::string(path + ".torrent"));
+    lt::torrent_handle handle = session_.add_torrent(params);
+    return handle;
 }
