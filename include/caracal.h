@@ -79,4 +79,4 @@ extern "C"
 }
 #endif
 
-#endif // CARACAL_CARACAL_H
+#endif // CARACAL_CARACAL_Hn

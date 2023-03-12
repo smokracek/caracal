@@ -19,18 +19,3 @@ caracal_lib = library('caracal',
                         include_directories : ['src', 'include'],
                         dependencies : [libtorrent_dep],
                         install : true)
-
-client_demo = executable('client-demo',
-                            ['demos/client_demo.cpp'],
-                            include_directories : ['src', 'include'],
-                            link_with : caracal_lib)
-
-dht_demo = executable('dht-demo',
-                            ['demos/dht_demo.cpp'],
-                            include_directories : ['src', 'include'],
-                            link_with : caracal_lib)
-
-seed_demo = executable('seed-demo',
-                            ['demos/seed_demo.cpp'],
-                            include_directories : ['src', 'include'],
-                            link_with : caracal_lib)
