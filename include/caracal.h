@@ -22,6 +22,12 @@ extern "C"
     void set_post_storage_dir(const char *path);
 
     /**
+     * Sets the username for the session
+     * @param username the username
+     */
+    void set_username(const char *username);
+
+    /**
      * Initiates a post download using the provided magnet link.
      * @param magnet_uri A valid magnet link.
      * @return A handle to the torrent.
@@ -41,11 +47,18 @@ extern "C"
     void handle_alerts(void);
 
     /**
-     * Creates a post bundle.
-     * @param file_name The relative path to the file.
-     * @return A post bundle descriptor of the torrent.
+     * Posts the magnet file for the post as an immutable item on the DHT.
+     * @param path Path to the file that will have its magnet posted.
+     * @return The SHA-1 hash of the bencoded object posted to the DHT.
      */
-    post_bundle_t create_post(const char *file_name);
+    char *post_to_dht(const char *path);
+
+    /**
+     * Searches the DHT for all post magnets associated with a username.
+     * Matching items appear in dht_item alerts
+     * @param username The username of the poster we are looking for
+     */
+    void get_user_post_magnets(char *username);
 
     /**
      * Sets servers to use to bootstrap the DHT network connection.
@@ -53,20 +66,6 @@ extern "C"
      * @return Integer representing success, 0 - success, 1 - failure
      */
     int set_dht_bootstrap_nodes(const char *url_port_list);
-
-    /**
-     * Sets the URL of the magnet repository server
-     * @param url_port_pair A string in the format `url:xxxx`.
-     * @return Integer representing success, 0 - success, 1 - failure
-     */
-    int set_magnet_repo(const char *url_port_pair);
-
-    /**
-     * Sends the post to the set magnet repo
-     * @param post Post bundle containing info about the post
-     * @return Integer representing success, 0 - success, 1 - failure
-     */
-    int send_post(post_bundle_t post);
 
     /**
      * Begins seeding the file the post bundle points to.

@@ -11,6 +11,10 @@
 #include <libtorrent/read_resume_data.hpp>
 #include <libtorrent/write_resume_data.hpp>
 #include <libtorrent/magnet_uri.hpp>
+#include <libtorrent/create_torrent.hpp>
+#include <libtorrent/entry.hpp>
+#include <libtorrent/bencode.hpp>
+#include <libtorrent/hasher.hpp>
 #include <fstream>
 #include <algorithm>
 #include <cctype>
@@ -26,6 +30,11 @@ void init_session(void)
 void set_post_storage_dir(const char *path)
 {
     LibTorrentSession::instance().set_post_storage_dir(path);
+}
+
+void set_username(const char *username)
+{
+    LibTorrentSession::instance().set_username(std::string(username));
 }
 
 torrent_handle_t download_post(const char *magnet_uri)
@@ -134,29 +143,6 @@ const char *get_magnet_uri(const char *file_name)
     return ret;
 }
 
-post_bundle_t create_post(const char *file_name)
-{
-    post_bundle_t post = (post_bundle_t)malloc(sizeof(_post_bundle_instance_t));
-    strncpy(post->path, file_name, sizeof(post->path));
-
-    try
-    {
-        LibTorrentSession::instance().create_torrent_file(std::string(file_name));
-    }
-    catch (const std::exception &e)
-    {
-        std::cout << e.what() << "\n"
-                  << "Returning to main." << std::endl;
-        return post;
-    }
-
-    create_magnet_uri(file_name);
-    strncpy(post->title, file_name, sizeof(post->title));
-    strncpy(post->magnet, get_magnet_uri(file_name), sizeof(post->magnet));
-
-    return post;
-}
-
 int set_dht_bootstrap_nodes(const char *node_list)
 {
     std::string input(node_list);
@@ -195,6 +181,53 @@ int set_dht_bootstrap_nodes(const char *node_list)
         return EXIT_FAILURE;
     }
     return EXIT_SUCCESS;
+}
+
+char *get_current_time()
+{
+    return (char *)(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now()));
+}
+
+char *post_to_dht(const char *file_name)
+{
+    try
+    {
+        LibTorrentSession::instance().create_torrent_file(file_name);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        return NULL;
+    }
+
+    create_magnet_uri(file_name);
+
+    std::string username = LibTorrentSession::instance().get_username();
+    lt::entry metadata;
+
+    lt::hasher hasher;
+
+    const char *time = get_current_time();
+    hasher.update(time, sizeof(time));
+    metadata["id"] = hasher.final();
+    metadata["magnet"] = get_magnet_uri(file_name);
+    metadata["date"] = time;
+
+    lt::entry data;
+    hasher.update(username);
+    data[hasher.final().data()] = metadata;
+
+    std::vector<char> post_data;
+    lt::bencode(std::back_inserter(post_data), data);
+
+    lt::sha1_hash hash = LibTorrentSession::instance().post_to_dht(post_data);
+
+    return hash.data();
+}
+
+void get_user_post_magnets(char *username)
+{
+    LibTorrentSession::instance().query_dht(username);
 }
 
 torrent_handle_t seed_file(post_bundle_t post)

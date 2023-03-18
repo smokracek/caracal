@@ -11,6 +11,7 @@
 #include <libtorrent/create_torrent.hpp>
 #include <libtorrent/bencode.hpp>
 #include <libtorrent/entry.hpp>
+#include <libtorrent/hasher.hpp>
 #include <fstream>
 #include <thread>
 #include <chrono>
@@ -30,7 +31,12 @@ LibTorrentSession::LibTorrentSession()
     lt::session_params params;
     params.settings.set_int(
         lt::settings_pack::alert_mask,
-        lt::alert_category::status | lt::alert_category::error | lt::alert_category::storage | lt::alert_category::piece_progress);
+        lt::alert_category::status |
+            lt::alert_category::error |
+            lt::alert_category::storage |
+            lt::alert_category::piece_progress |
+            lt::alert_category::dht |
+            lt::alert_category::dht_operation);
     lt::session session_(params);
 };
 
@@ -130,6 +136,28 @@ void LibTorrentSession::set_dht_bootstrap_nodes(std::vector<std::pair<std::strin
     throw std::runtime_error("Failed to connect to any DHT nodes");
 }
 
+lt::sha1_hash LibTorrentSession::post_to_dht(lt::entry metadata)
+{
+    lt::sha1_hash hash;
+    try
+    {
+        hash = session_.dht_put_item(metadata);
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << e.what() << '\n';
+        throw std::runtime_error("Error posting to DHT");
+    }
+    return hash;
+}
+
+void LibTorrentSession::query_dht(char *key)
+{
+    lt::hasher hasher;
+    hasher.update(key, sizeof(key));
+    session_.dht_get_item(hasher.final());
+}
+
 lt::torrent_handle LibTorrentSession::seed_torrent(const std::string &path)
 {
     lt::add_torrent_params params;
@@ -137,4 +165,14 @@ lt::torrent_handle LibTorrentSession::seed_torrent(const std::string &path)
     params.ti = std::make_shared<lt::torrent_info>(std::string(path + ".torrent"));
     lt::torrent_handle handle = session_.add_torrent(params);
     return handle;
+}
+
+void LibTorrentSession::set_username(const std::string username)
+{
+    username_ = username;
+}
+
+std::string LibTorrentSession::get_username()
+{
+    return username_;
 }
