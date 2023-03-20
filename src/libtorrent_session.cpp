@@ -4,6 +4,7 @@
 #include <libtorrent/settings_pack.hpp>
 #include <libtorrent/add_torrent_params.hpp>
 #include <libtorrent/alert.hpp>
+#include <libtorrent/alert_types.hpp>
 #include <libtorrent/read_resume_data.hpp>
 #include <libtorrent/torrent_status.hpp>
 #include <libtorrent/torrent_handle.hpp>
@@ -156,6 +157,23 @@ void LibTorrentSession::query_dht(char *key)
     lt::hasher hasher;
     hasher.update(key, sizeof(key));
     session_.dht_get_item(hasher.final());
+}
+
+std::vector<lt::dht_immutable_item_alert *> LibTorrentSession::get_dht_alerts()
+{
+    std::vector<lt::alert *> lt_alerts;
+    session_.pop_alerts(&lt_alerts);
+
+    std::vector<lt::dht_immutable_item_alert *> dht_alerts;
+
+    for (auto alert : lt_alerts)
+    {
+        if (alert->category() == lt::alert_category::dht)
+        {
+            dht_alerts.push_back(lt::alert_cast<lt::dht_immutable_item_alert>(alert));
+        }
+    }
+    return dht_alerts;
 }
 
 lt::torrent_handle LibTorrentSession::seed_torrent(const std::string &path)

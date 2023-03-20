@@ -24,6 +24,7 @@ public:
     void set_dht_bootstrap_nodes(std::vector<std::pair<std::string, int>> nodes);
     lt::sha1_hash post_to_dht(lt::entry metadata);
     void query_dht(char *key);
+    std::vector<lt::dht_immutable_item_alert *> get_dht_alerts();
     lt::torrent_handle seed_torrent(const std::string &path);
     void set_username(const std::string username);
     std::string get_username();

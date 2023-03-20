@@ -9,6 +9,7 @@ extern "C"
 #include "torrent_status.h"
 #include "torrent_handle.h"
 #include "post_bundle.h"
+#include "dht_item.h"
 
     /**
      * Initializes the session.
@@ -42,9 +43,10 @@ extern "C"
     torrent_status_t get_torrent_status(torrent_handle_t handle);
 
     /**
-     * To be deprecated. Opaquely handles the libTorrent session alerts.
+     * @param username The username to check the query for
+     * @return A list of post IDs
      */
-    void handle_alerts(void);
+    dht_item_t *check_dht_queries(char *username);
 
     /**
      * Posts the magnet file for the post as an immutable item on the DHT.

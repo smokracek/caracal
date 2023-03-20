@@ -5,6 +5,7 @@
 #include "torrent_handle.h"
 #include "post_bundle.h"
 #include "magnet_pool.hpp"
+#include "dht_item.h"
 #include <libtorrent/torrent_status.hpp>
 #include <libtorrent/alert.hpp>
 #include <libtorrent/alert_types.hpp>
@@ -87,39 +88,6 @@ torrent_status_t get_torrent_status(torrent_handle_t handle)
         status->type = UNDEFINED;
     }
     return status;
-}
-
-void handle_alerts()
-{
-    std::vector<lt::alert *> lt_alerts = LibTorrentSession::instance().get_session_alerts();
-    for (int i = 0; i < lt_alerts.size(); i++)
-    {
-        lt::alert *a = lt_alerts[i];
-        lt::torrent_handle h;
-        if (auto at = lt::alert_cast<lt::add_torrent_alert>(a))
-        {
-            h = at->handle;
-        }
-        // if we receive the finished alert or an error, we're done
-        if (lt::alert_cast<lt::torrent_finished_alert>(a))
-        {
-            h.save_resume_data(lt::torrent_handle::only_if_modified | lt::torrent_handle::save_info_dict);
-        }
-        if (lt::alert_cast<lt::torrent_error_alert>(a))
-        {
-            std::cout << a->message() << std::endl;
-            h.save_resume_data(lt::torrent_handle::only_if_modified | lt::torrent_handle::save_info_dict);
-
-            // when resume data is ready, save it
-            if (auto rd = lt::alert_cast<lt::save_resume_data_alert>(a))
-            {
-                std::ofstream of(".resume_file", std::ios_base::binary);
-                of.unsetf(std::ios_base::skipws);
-                auto const b = write_resume_data_buf(rd->params);
-                of.write(b.data(), int(b.size()));
-            }
-        }
-    }
 }
 
 void create_magnet_uri(const char *file_name)
@@ -211,7 +179,7 @@ char *post_to_dht(const char *file_name)
     hasher.update(time, sizeof(time));
     metadata["id"] = hasher.final();
     metadata["magnet"] = get_magnet_uri(file_name);
-    metadata["date"] = time;
+    metadata["time"] = time;
 
     lt::entry data;
     hasher.update(username);
@@ -223,6 +191,32 @@ char *post_to_dht(const char *file_name)
     lt::sha1_hash hash = LibTorrentSession::instance().post_to_dht(post_data);
 
     return hash.data();
+}
+
+dht_item_t *check_dht_queries(char *username)
+{
+    lt::hasher hasher;
+    hasher.update(std::string(username));
+    char *hashed_user = hasher.final().data();
+
+    std::vector<lt::dht_immutable_item_alert *> alerts = LibTorrentSession::instance().get_dht_alerts();
+    dht_item_t *ret_list = (dht_item_t *)malloc(alerts.size() * sizeof(dht_item_t));
+
+    int i = 0;
+    for (auto alert : alerts)
+    {
+        lt::entry *entry = alert->item.find_key(hashed_user);
+        if (entry != nullptr)
+        {
+            strncpy(ret_list[i]->hash, alert->target.data(), sizeof(ret_list[i]->hash));
+            strncpy(ret_list[i]->username, username, sizeof(ret_list[i]->username));
+            strncpy(ret_list[i]->magnet, (*entry)["magnet"].string().c_str(), sizeof(ret_list[i]->magnet));
+            strncpy(ret_list[i]->id, (*entry)["id"].string().c_str(), sizeof(ret_list[i]->id));
+            ret_list[i]->time = (long)(*entry)["time"].string().c_str();
+        }
+        i++;
+    }
+    return ret_list;
 }
 
 void get_user_post_magnets(char *username)
