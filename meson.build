@@ -12,7 +12,8 @@ src = [
     'src/torrent_handle.cpp',
     'src/torrent_pool.cpp',
     'src/magnet_pool.cpp',
-    'src/post_bundle.cpp']
+    'src/post_bundle.cpp',
+    'src/dht_item.cpp']
 
 caracal_lib = library('caracal', 
                         src, 
