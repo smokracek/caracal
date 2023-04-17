@@ -1,23 +1,13 @@
 {
-    "version": "0.2.0",
-    "configurations": [
-        {
-            "name": "Client Demo",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/builddir/client-demo",
-            "args": [],
-            "cwd": "${fileDirname}"
-        },
-        {
-            "name": "DHT Test",
-            "type": "lldb",
-            "request": "launch",
-            "program": "${workspaceFolder}/builddir/dht-demo",
-            "args": ["router.utorent.com:6881", 
-                    "../builddir/libcaracal.dylib"],
-            "cwd": "${fileDirname}",
-        }
-
-    ]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Client Demo",
+      "type": "lldb",
+      "request": "launch",
+      "program": "${workspaceFolder}/builddir/client-demo",
+      "args": [],
+      "cwd": "${fileDirname}"
+    }
+  ]
 }
